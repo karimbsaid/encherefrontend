@@ -5,6 +5,7 @@ import {
   createContext,
   useContext,
   useCallback,
+  cloneElement,
 } from "react";
 import { HiCheck, HiChevronDown } from "react-icons/hi2";
 import Button from "./Button";
@@ -66,57 +67,39 @@ const DropDown = ({ value, onValueChange, children }) => {
   );
 };
 
-const ButtonComponent = ({ icon, label }) => {
-  const { selectedItem, setIsOpen, isOpen } = useDropDown();
+const Trigger = ({ children }) => {
+  const { isOpen, setIsOpen } = useDropDown();
 
-  return (
-    <Button
-      onClick={() => setIsOpen(!isOpen)}
-      icon={icon}
-      type="button"
-      label={selectedItem ? selectedItem.optionText : label}
-      className="w-full flex justify-between items-center bg-gray-800 text-white border border-gray-700 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all"
-      iconEnd={HiChevronDown}
-    />
-  );
+  return cloneElement(children, { onClick: () => setIsOpen(!isOpen) });
 };
 
-const Content = ({ children }) => {
+const Window = ({ children }) => {
   const { isOpen } = useDropDown();
 
   if (!isOpen) return null;
 
   return (
-    <div className="absolute mt-2 w-full bg-white border rounded-lg shadow-md z-10">
+    <div className="absolute mt-2 w-full top-8 bg-white border rounded-b-lg shadow-md z-2000">
       {children}
     </div>
   );
 };
 
 const Item = ({ value, children }) => {
-  const { handleSelect, selectedItem, registerItem } = useDropDown();
-
-  useEffect(() => {
-    const unregister = registerItem(value, children);
-    return unregister;
-  }, [value, children, registerItem]);
+  const { handleSelect } = useDropDown();
 
   return (
     <div
       className="px-4 py-2 hover:bg-gray-200 cursor-pointer flex items-center"
       onClick={() => handleSelect(value)}
     >
-      <HiCheck
-        opacity={selectedItem?.value === value ? 100 : 0}
-        className="mr-1"
-      />
       {children}
     </div>
   );
 };
 
-DropDown.Button = ButtonComponent;
-DropDown.Content = Content;
+DropDown.Trigger = Trigger;
+DropDown.Window = Window;
 DropDown.Item = Item;
 
 export default DropDown;

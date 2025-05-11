@@ -14,19 +14,27 @@ const AuctionSettings = ({ formData, setFormData, isEdit }) => {
 
   return (
     <Card>
-      <h1>Auction Settings</h1>
-      <p>Set your starting price and auction duration.</p>
+      <h1 className="text-2xl font-semibold text-gray-800">Auction Settings</h1>
+      <p className="text-sm text-gray-500 mb-4">
+        Set your starting price and auction duration.
+      </p>
+
       <div className="space-y-4">
         <div className="space-y-2">
+          <label
+            htmlFor="startPrice"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Starting Price ($)
+          </label>
           <div className="relative">
+            <HiCurrencyDollar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <Input
-              icon={HiCurrencyDollar}
               id="startPrice"
-              label="Starting Price ($)"
               name="startPrice"
               type="number"
               placeholder="0.00"
-              className="pl-9"
+              className="pl-10 pr-3 py-2 w-full border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formData.startPrice}
               onChange={handleInputChange}
               min="0.01"
@@ -36,14 +44,19 @@ const AuctionSettings = ({ formData, setFormData, isEdit }) => {
         </div>
 
         <div className="space-y-2">
+          <label
+            htmlFor="endTime"
+            className="block text-sm font-medium text-gray-700"
+          >
+            End Date & Time
+          </label>
           <div className="relative">
+            <HiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <Input
-              icon={HiCalendar}
-              label="End Date & Time"
               id="endTime"
               name="endTime"
               type="datetime-local"
-              className="pl-9"
+              className="pl-10 pr-3 py-2 w-full border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formData.endTime}
               onChange={handleInputChange}
             />

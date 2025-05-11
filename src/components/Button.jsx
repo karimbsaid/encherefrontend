@@ -1,10 +1,8 @@
 const Button = ({
-  label = "Button",
-  icon: Icon = null,
-  iconEnd: IconEnd = null,
   disabled = false,
   variant = "simple",
   outline = false,
+  children,
   ...props
 }) => {
   const variantStyles = {
@@ -34,12 +32,9 @@ const Button = ({
     <button
       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition whitespace-nowrap 
           ${varStyle} ${disabled ? disabledStyles : ""} `}
-      disabled={disabled}
       {...props}
     >
-      {Icon && <Icon className="mr-2 h-5 w-5" />}
-      {label}
-      {IconEnd && <IconEnd className="ml-2 h-5 w-5" />}
+      {children}
     </button>
   );
 };

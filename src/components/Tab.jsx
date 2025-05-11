@@ -7,11 +7,11 @@ import React, {
 
 const TabsContext = createContext();
 
-export const Tabs = ({ defaultValue, onTabChange, children, className }) => {
+export const Tabs = ({ defaultValue, children, className }) => {
   const [activeTab, setActiveTab] = useState(defaultValue);
   const handleTabChange = (value) => {
     setActiveTab(value);
-    onTabChange(value);
+    // onTabChange(value);
   };
 
   return (

@@ -7,8 +7,10 @@ import { HiClock } from "react-icons/hi2";
 import Badge from "../../components/Badge";
 import { placeBid } from "../../service/apiAuction";
 import { useAuth } from "../../context/authContext";
+import axiosInstance from "../../service/axiosInstance";
 
-export default function BidCard({ auction }) {
+export default function BidCard({ auction, onBidSuccess }) {
+  console.log(auction);
   const [bidAmount, setBidAmount] = useState("");
   const [bidError, setBidError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
@@ -17,6 +19,13 @@ export default function BidCard({ auction }) {
     : auction.startPrice;
 
   const { user } = useAuth();
+  const now = new Date();
+  const targetDate = new Date(auction.endTime);
+  const formatted = targetDate.toLocaleString("en-US", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
+  const isEnded = now > targetDate;
 
   const handleBidSubmit = async (e) => {
     e.preventDefault();
@@ -37,21 +46,29 @@ export default function BidCard({ auction }) {
       return;
     }
 
-    await placeBid(auction.id, user.token, amount);
-
+    const response = await axiosInstance.post(
+      `/api/auctions/${auction.id}/bids`,
+      null, // no request body, since you're sending data via query params
+      {
+        params: { amount },
+      }
+    );
+    onBidSuccess();
+    console.log(response);
     setBidSuccess(true);
   };
   return (
     <Card className="overflow-hidden">
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Current Bid</h3>
+          <h3 className="text-lg font-medium ">Current Bid</h3>
           <Badge
+            className="flex items-center space-x-1 text-red-500"
             variant="outline"
-            className="flex items-center gap-1 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
-            icon={HiClock}
-            text="today"
-          />
+          >
+            <HiClock />
+            <span>{formatted}</span>
+          </Badge>
         </div>
 
         <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
@@ -61,12 +78,14 @@ export default function BidCard({ auction }) {
         <form onSubmit={handleBidSubmit} className="space-y-4">
           <div>
             <div className="relative">
-              $
               <Input
                 type="number"
                 placeholder="Enter your bid"
-                className="pl-9"
+                className={`w-full bg-background pl-10 p-2 border border-gray-300 ${
+                  isEnded && "cursor-not-allowed"
+                }`}
                 value={bidAmount}
+                disabled={isEnded}
                 onChange={(e) => setBidAmount(e.target.value)}
                 min={1}
                 step="1"
@@ -74,6 +93,9 @@ export default function BidCard({ auction }) {
             </div>
             {bidError && (
               <p className="mt-1 text-sm text-red-600">{bidError}</p>
+            )}
+            {isEnded && (
+              <p className="mt-1 text-sm text-red-600"> auction is closed</p>
             )}
           </div>
 

@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { loginUser, signupUser } from "../service/apiLogin";
-
+import axiosInstance from "../service/axiosInstance";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -10,22 +9,44 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
+
+    if (token && !isTokenExpired(token)) {
       const decodedToken = jwtDecode(token);
       setUser({ email: decodedToken.sub, token });
+    } else {
+      localStorage.removeItem("token");
+      setUser(null);
     }
-    setIsLoading(false); // Done checking localStorage
+
+    setIsLoading(false);
   }, []);
+
+  const isTokenExpired = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      const currentTime = Date.now() / 1000; // convert to seconds
+      return decoded.exp < currentTime;
+    } catch (err) {
+      return true; // treat invalid token as expired
+    }
+  };
 
   const login = async (email, password) => {
     setIsLoading(true);
     try {
-      const response = await loginUser(email, password);
+      const response = await axiosInstance.post("/api/auth/login", {
+        email,
+        password,
+      });
+
       const { token } = response;
       localStorage.setItem("token", token);
 
       const decodedToken = jwtDecode(token);
       setUser({ email: decodedToken.sub, token });
+      return true;
+    } catch (err) {
+      throw new Error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -33,9 +54,17 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (formData) => {
     setIsLoading(true);
+    console.log(formData);
     try {
-      const { name, email, password } = formData;
-      await signupUser(name, email, password);
+      const { username, email, password } = formData;
+      const response = await axiosInstance.post("/api/auth/signup", {
+        username,
+        email,
+        password,
+      });
+      return true;
+    } catch (err) {
+      throw new Error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +84,7 @@ export const AuthProvider = ({ children }) => {
         signup,
         logout,
         user,
+        isTokenExpired,
         isLoading,
       }}
     >

@@ -12,6 +12,8 @@ import { useAuth } from "../context/authContext";
 
 export default function AuctionDetailPage() {
   const [auctionData, setAuctionData] = useState({});
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+
   const [loading, setLoading] = useState(true);
 
   const { user, isLoading } = useAuth();
@@ -32,7 +34,7 @@ export default function AuctionDetailPage() {
     if (user && !isLoading) {
       fetchAuctionDetail(user.token);
     }
-  }, [auctionId, isLoading, user]);
+  }, [auctionId, isLoading, user, refetchTrigger]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -59,7 +61,10 @@ export default function AuctionDetailPage() {
         </div>
 
         <div className="flex flex-col space-y-6">
-          <BidCard auction={auctionData} />
+          <BidCard
+            auction={auctionData}
+            onBidSuccess={() => setRefetchTrigger((prev) => prev + 1)}
+          />
           <SellerInformation auction={auctionData} />
           <BidHistory auction={auctionData} />
         </div>

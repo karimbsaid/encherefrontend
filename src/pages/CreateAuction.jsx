@@ -146,21 +146,26 @@ export default function CreateAuctionPage() {
     if (!validateForm()) {
       return;
     }
-    if (isEdit) {
-      const { updatedFields, newImages, deletedImages } =
-        prepareAuctionUpdate(formData);
-      await updateAuction(
-        auctionId,
-        updatedFields,
-        newImages,
-        deletedImages,
-        token
-      );
-    } else {
-      await createAuction(formData, token);
-    }
-
     setIsSubmitting(true);
+    try {
+      if (isEdit) {
+        const { updatedFields, newImages, deletedImages } =
+          prepareAuctionUpdate(formData);
+        await updateAuction(
+          auctionId,
+          updatedFields,
+          newImages,
+          deletedImages,
+          token
+        );
+      } else {
+        await createAuction(formData, token);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   if (isLoading) {
     return <div>Loading...</div>;
@@ -194,19 +199,20 @@ export default function CreateAuctionPage() {
             />
 
             <Button
-              label={
-                isSubmitting
+              type="submit"
+              className="w-full sm:w-auto border border-gray-500 p-2 bg-black text-white"
+              disabled={isSubmitting}
+            >
+              <span>
+                {isSubmitting
                   ? isEdit
                     ? "Editing Auction..."
                     : "Creating Auction..."
                   : isEdit
                   ? "Update Auction"
-                  : "Create Auction"
-              }
-              type="submit"
-              className="w-full sm:w-auto"
-              disabled={isSubmitting}
-            />
+                  : "Create Auction"}
+              </span>
+            </Button>
           </form>
         </div>
       </div>

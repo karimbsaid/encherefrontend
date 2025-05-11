@@ -3,10 +3,18 @@ import Card from "../../components/Card";
 import DropDown from "../../components/DropDown";
 import Input from "../../components/Input";
 import { getAllCategory, getAllConditions } from "../../service/apiAuction";
+import Button from "../../components/Button";
+import { HiChevronDown } from "react-icons/hi2";
 
 const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
+  console.log(formData);
   const [categories, setCategories] = useState([]);
   const [conditions, setConditions] = useState([]);
+
+  // Add state to track selected category and condition names
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [selectedConditionName, setSelectedConditionName] = useState("");
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -20,16 +28,66 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
     const fetchCategories = async () => {
       const categories = await getAllCategory(token);
       setCategories(categories);
+
+      // If formData already has a category ID, find and set the name
+      if (formData.category) {
+        const selectedCategory = categories.find(
+          (cat) => cat.id === formData.category
+        );
+        if (selectedCategory) {
+          setSelectedCategoryName(selectedCategory.name);
+        }
+      }
     };
+
     const fetchConditions = async () => {
       const conditions = await getAllConditions(token);
       setConditions(conditions);
+
+      // If formData already has a condition ID, find and set the name
+      if (formData.condition) {
+        const selectedCondition = conditions.find(
+          (cond) => cond.id === formData.condition
+        );
+        if (selectedCondition) {
+          setSelectedConditionName(selectedCondition.name);
+        }
+      }
     };
+
     if (token) {
       fetchCategories();
       fetchConditions();
     }
-  }, [token]);
+  }, [token, formData.category, formData.condition]);
+
+  // Handle category selection - set both ID and name
+  const handleCategoryChange = (categoryId) => {
+    const selectedCategory = categories.find((cat) => cat.id === categoryId);
+    if (selectedCategory) {
+      setSelectedCategoryName(selectedCategory.name);
+      setFormData((prev) => ({
+        ...prev,
+        category: categoryId,
+        ...(isEdit ? { updated: true } : {}),
+      }));
+    }
+  };
+
+  // Handle condition selection - set both ID and name
+  const handleConditionChange = (conditionId) => {
+    const selectedCondition = conditions.find(
+      (cond) => cond.id === conditionId
+    );
+    if (selectedCondition) {
+      setSelectedConditionName(selectedCondition.name);
+      setFormData((prev) => ({
+        ...prev,
+        condition: conditionId,
+        ...(isEdit ? { updated: true } : {}),
+      }));
+    }
+  };
 
   return (
     <Card>
@@ -50,48 +108,78 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="description">Description</label>
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Description
+          </label>
           <textarea
             id="description"
             name="description"
             placeholder="Describe your item in detail"
             rows={5}
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             value={formData.description}
             onChange={handleInputChange}
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <DropDown
-            value={formData.category}
-            onValueChange={(v) => {
-              setFormData((prev) => ({ ...prev, category: v }));
-            }}
-          >
-            <DropDown.Button label="Categories" />
-            <DropDown.Content>
-              {categories.map((categorie) => (
-                <DropDown.Item key={categorie.id} value={categorie.id}>
-                  {categorie.name}
-                </DropDown.Item>
-              ))}
-            </DropDown.Content>
-          </DropDown>
+          <div className="space-y-2">
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Category
+            </label>
+            <DropDown
+              value={formData.category}
+              onValueChange={handleCategoryChange}
+            >
+              <DropDown.Trigger>
+                <Button className="w-full justify-between border border-gray-500 flex items-center p-2 rounded-t-md">
+                  {selectedCategoryName || "Select Category"}
+                  <HiChevronDown />
+                </Button>
+              </DropDown.Trigger>
 
-          <DropDown
-            value={formData.condition}
-            onValueChange={(v) => {
-              setFormData((prev) => ({ ...prev, condition: v }));
-            }}
-          >
-            <DropDown.Button label="condition" />
-            <DropDown.Content>
-              {conditions.map((cond) => (
-                <DropDown.Item key={cond.id} value={cond.id}>
-                  {cond.name}
-                </DropDown.Item>
-              ))}
-            </DropDown.Content>
-          </DropDown>
+              <DropDown.Window>
+                {categories.map((category) => (
+                  <DropDown.Item key={category.id} value={category.id}>
+                    <span>{category.name}</span>
+                  </DropDown.Item>
+                ))}
+              </DropDown.Window>
+            </DropDown>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="conditions"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Condition
+            </label>
+            <DropDown
+              value={formData.condition}
+              onValueChange={handleConditionChange}
+            >
+              <DropDown.Trigger>
+                <Button className="w-full justify-between border border-gray-500 flex items-center p-2 rounded-t-md">
+                  {selectedConditionName || "Select Condition"}
+                  <HiChevronDown />
+                </Button>
+              </DropDown.Trigger>
+
+              <DropDown.Window>
+                {conditions.map((cond) => (
+                  <DropDown.Item key={cond.id} value={cond.id}>
+                    <span>{cond.name}</span>
+                  </DropDown.Item>
+                ))}
+              </DropDown.Window>
+            </DropDown>
+          </div>
         </div>
       </div>
     </Card>

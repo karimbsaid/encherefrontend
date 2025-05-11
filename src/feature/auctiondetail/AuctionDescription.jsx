@@ -17,12 +17,10 @@ export default function AuctionDescription({ auction }) {
       <h1 className="text-2xl font-bold md:text-3xl">{auction.title}</h1>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Badge
-          variant="outline"
-          className="flex items-center"
-          icon={HiCurrencyDollar}
-          text={`Starting: ${auction.startPrice}`}
-        />
+        <Badge variant="outline" className="flex items-center">
+          <HiCurrencyDollar />
+          <span>Starting: {auction.startPrice}</span>
+        </Badge>
         <Badge
           variant="outline"
           className="flex items-center"

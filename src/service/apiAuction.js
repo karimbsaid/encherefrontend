@@ -39,6 +39,7 @@ export const placeBid = async (auctionId, token, amount) => {
 };
 
 export const createAuction = async (auctionData, token) => {
+  console.log("auction", auctionData);
   const { images, ...other } = auctionData;
   console.log(images);
   const formData = new FormData();
@@ -63,8 +64,9 @@ export const createAuction = async (auctionData, token) => {
   if (!response.ok) {
     throw new Error("Failed to create auction");
   }
+  // console.log(await response.json());
 
-  return await response.json();
+  // return response.json();
 };
 
 export const updateAuction = async (
@@ -74,6 +76,7 @@ export const updateAuction = async (
   deletedImages = [],
   token
 ) => {
+  console.log("update auction");
   const formData = new FormData();
 
   if (auctionData) {
