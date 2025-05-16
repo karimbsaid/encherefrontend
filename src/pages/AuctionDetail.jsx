@@ -7,8 +7,9 @@ import AuctionDescription from "../feature/auctiondetail/AuctionDescription";
 import Carousel from "../components/Caroussel";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getAuctionById } from "../service/apiAuction";
 import { useAuth } from "../context/authContext";
+import useWebSocket from "../hooks/useWebSocket";
+import axiosInstance from "../service/axiosInstance";
 
 export default function AuctionDetailPage() {
   const [auctionData, setAuctionData] = useState({});
@@ -20,9 +21,11 @@ export default function AuctionDetailPage() {
   const { auctionId } = useParams();
 
   useEffect(() => {
-    const fetchAuctionDetail = async (token) => {
+    const fetchAuctionDetail = async () => {
       try {
-        const auctionData = await getAuctionById(auctionId, token);
+        const auctionData = await axiosInstance.get(
+          `/api/auctions/${auctionId}`
+        );
         setAuctionData(auctionData);
       } catch (error) {
         console.error("Error fetching auction:", error);
@@ -32,9 +35,18 @@ export default function AuctionDetailPage() {
     };
 
     if (user && !isLoading) {
-      fetchAuctionDetail(user.token);
+      fetchAuctionDetail();
     }
   }, [auctionId, isLoading, user, refetchTrigger]);
+  useWebSocket({
+    auctionId,
+    onMessage: (newBid) => {
+      setAuctionData((prevData) => ({
+        ...prevData,
+        bids: [newBid, ...(prevData.bids || [])],
+      }));
+    },
+  });
 
   if (loading) {
     return <p>Loading...</p>;

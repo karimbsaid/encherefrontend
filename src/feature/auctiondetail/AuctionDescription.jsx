@@ -3,6 +3,7 @@ import { HiCalendar, HiCurrencyDollar } from "react-icons/hi2";
 import Badge from "../../components/Badge";
 
 export default function AuctionDescription({ auction }) {
+  console.log(auction);
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
@@ -21,20 +22,17 @@ export default function AuctionDescription({ auction }) {
           <HiCurrencyDollar />
           <span>Starting: {auction.startPrice}</span>
         </Badge>
-        <Badge
-          variant="outline"
-          className="flex items-center"
-          icon={HiCalendar}
-          text={`Ends: ${formatDate(auction.endTime)}`}
-        />
-        <Badge
-          className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
-          text={auction.category?.name}
-        />
-        <Badge
-          variant="outline"
-          text={`Condition: ${auction.condition?.name}`}
-        />
+        <Badge variant="outline" className="flex items-center">
+          <HiCalendar />
+          <span>Ends: {formatDate(auction.endTime)}</span>
+        </Badge>
+        <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 p-2">
+          {auction.category?.name}
+        </Badge>
+
+        <Badge variant="outline">
+          <span>Condition: {auction.condition?.name}</span>
+        </Badge>
       </div>
 
       <div className="mt-6">

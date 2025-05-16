@@ -8,20 +8,23 @@ import AppLayout from "./components/AppLayout";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import Dashboard from "./pages/dashboard";
+import NotificationPage from "./pages/NotificationPage";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route element={<AppLayout />}>
-            <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/notifications" element={<NotificationPage />} />
               <Route
                 path="/auctions/:auctionId"
                 element={<AuctionDetailPage />}
               />
-              <Route path="/auctions/create" element={<CreateAuctionPage />} />
+              <Route path="/auctions/new" element={<CreateAuctionPage />} />
               <Route
                 path="/auctions/update/:auctionId"
                 element={<CreateAuctionPage />}
@@ -32,6 +35,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Signup />} />
         </Routes>
+        <Toaster />
       </Router>
     </AuthProvider>
   );

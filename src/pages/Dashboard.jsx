@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Modal, ModalContext } from "../components/Modal";
 import ConfirmDelete from "../components/ConfirmDelete";
 import Button from "../components/Button";
+import { HiPlus } from "react-icons/hi2";
 
 export default function Dashboard() {
   return (
@@ -25,11 +26,12 @@ function DashboardContent() {
 
   useEffect(() => {
     const getMyBidAuctions = async () => {
-      const response = await axiosInstance.get("/api/auctions/mybids");
+      const response = await axiosInstance.get("/api/mybids");
       setAuctionsBid(response);
     };
     const getMyAuctions = async () => {
       const response = await axiosInstance.get("/api/auctions/myauctions");
+      console.log(response);
       setMyAuctions(response);
     };
     getMyBidAuctions();
@@ -53,10 +55,23 @@ function DashboardContent() {
 
   return (
     <>
+      <div className="flex items-center justify-between mb-12">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Manage your auctions, bids, and account settings.
+          </p>
+        </div>
+        <Button onClick={() => navigate("/auctions/new")}>
+          <HiPlus className="w-4 h-4" />
+          add auction
+        </Button>
+      </div>
+
       <Tabs defaultValue="mybids" className="mb-8">
-        <TabsList className="mb-4 flex  w-full overflow-x-auto">
-          <TabsTrigger value="mybids">my bids auctions</TabsTrigger>
-          <TabsTrigger value="myauctions">my auctions</TabsTrigger>
+        <TabsList className="mb-4 flex justify-center gap-4">
+          <TabsTrigger value="mybids">My bids </TabsTrigger>
+          <TabsTrigger value="myauctions">Selling</TabsTrigger>
         </TabsList>
         <TabsContent
           value="mybids"
@@ -78,12 +93,8 @@ function DashboardContent() {
               onEdit={handleEditAuctionNavigation}
             />
           ))}
-          <Button onClick={() => navigate("/auctions/create")}>
-            add auction
-          </Button>
         </TabsContent>
       </Tabs>
-
       <Modal.Window name="delete-confirm">
         <ConfirmDelete
           confirmationText="SUPPRIMER"

@@ -7,36 +7,58 @@ import AuctionCard from "../components/AuctionCard";
 import Button from "../components/Button";
 import { useSearchParams } from "react-router-dom";
 import axiosInstance from "../service/axiosInstance";
+import Pagination from "../components/Pagination";
 export default function HomePage() {
   const [auctions, setAuctions] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState([]);
   const [conditions, setConditions] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const currentPage = parseInt(searchParams.get("page") || 1, 10);
+  const currentPage = parseInt(searchParams.get("page") || 0, 10);
   const limit = parseInt(searchParams.get("limit") || 5, 10);
   const categoriesquery = searchParams.get("categories") || "";
   const conditionssquery = searchParams.get("conditions") || "";
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
   const searchquery = searchParams.get("search") || "";
 
   useEffect(() => {
     const fetchAuctions = async () => {
+      const params = {
+        category: categoriesquery,
+        condition: conditionssquery,
+        search: searchquery,
+        page: currentPage,
+        size: limit,
+      };
+
+      if (minPrice) params.minPrice = minPrice;
+      if (maxPrice) params.maxPrice = maxPrice;
+
       const response = await axiosInstance.get("/api/auctions", {
-        params: {
-          category: categoriesquery,
-          condition: conditionssquery,
-          search: searchquery,
-        },
+        params,
       });
+      setTotalPages(response.totalPages);
+
       setAuctions(response.content);
     };
+
     fetchAuctions();
-  }, [categoriesquery, setSearchParams, conditionssquery]);
+  }, [
+    categoriesquery,
+    setSearchParams,
+    conditionssquery,
+    searchquery,
+    minPrice,
+    maxPrice,
+    currentPage,
+    limit,
+  ]);
 
   useEffect(() => {
     const getAllConditions = async () => {
-      const response = await axiosInstance.get("/api/auctions/conditions");
+      const response = await axiosInstance.get("/api/conditions");
       setConditions(response);
     };
 
@@ -45,12 +67,15 @@ export default function HomePage() {
 
   useEffect(() => {
     const getAllCategories = async () => {
-      const response = await axiosInstance.get("/api/auctions/categories");
+      const response = await axiosInstance.get("/api/categories");
       setCategories(response);
     };
     getAllCategories();
   }, []);
-
+  const handlePageChange = (newPage) => {
+    searchParams.set("page", newPage);
+    setSearchParams(searchParams);
+  };
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -64,16 +89,6 @@ export default function HomePage() {
               Bid on exclusive items from around the world. Find rare
               collectibles, art, and more.
             </p>
-            <div className="w-full max-w-md space-y-2">
-              <div className="relative">
-                <HiMagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search for items..."
-                  className="w-full bg-background pl-10 p-2 border border-gray-300"
-                />
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -90,47 +105,16 @@ export default function HomePage() {
             </Button>
 
             <div className="flex-1 items-center col-span-2">
-              <Tabs defaultValue="All" className="mb-8">
-                <TabsList className="mb-4 flex w-full overflow-x-auto">
-                  <TabsTrigger value="All">All</TabsTrigger>
-                  {categories.map((category) => (
-                    <TabsTrigger
-                      key={category.id}
-                      value={category.name}
-                      className="flex-shrink-0"
-                    >
-                      {category.name}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                <TabsContent
-                  value="All"
-                  className="grid grid-cols-1 md:grid-cols-3 gap-5"
-                >
-                  {auctions.map((auc) => (
-                    <AuctionCard key={auc.id} auction={auc} />
-                  ))}
-                </TabsContent>
-
-                {/* {categories.map((category) => (
-                  <TabsContent
-                    key={category.id}
-                    value={category.id}
-                    className="mt-0"
-                  >
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                      {allAuctions
-                        .filter(
-                          (auction) =>
-                            auction.category.toLowerCase() === category.id
-                        )
-                        .map((auction) => (
-                          <AuctionCard key={auction.id} auction={auction} />
-                        ))}
-                    </div>
-                  </TabsContent>
-                ))} */}
-              </Tabs>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-8">
+                {auctions.map((auc) => (
+                  <AuctionCard key={auc.id} auction={auc} />
+                ))}
+              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         </div>

@@ -5,11 +5,10 @@ import { HiXMark, HiMagnifyingGlass } from "react-icons/hi2";
 import { useSearchParams } from "react-router-dom";
 
 export default function FilterSidebar({ categories, conditions }) {
-  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [priceRange, setPriceRange] = useState(["", ""]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedConditions, setSelectedConditions] = useState([]);
-  const [endingSoon, setEndingSoon] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
@@ -22,11 +21,21 @@ export default function FilterSidebar({ categories, conditions }) {
   }, [searchQuery]);
 
   useEffect(() => {
-    searchParams.set("minPrice", priceRange[0]);
-    searchParams.set("maxPrice", priceRange[1]);
+    if (priceRange[0] !== "") {
+      searchParams.set("minPrice", priceRange[0]);
+    } else {
+      searchParams.delete("minPrice");
+    }
+
+    if (priceRange[1] !== "") {
+      searchParams.set("maxPrice", priceRange[1]);
+    } else {
+      searchParams.delete("maxPrice");
+    }
+
     setSearchParams(searchParams);
-    console.log("price range", priceRange);
   }, [priceRange]);
+
   useEffect(() => {
     const categoriesQuery = searchParams.get("categories");
     if (categoriesQuery) {
@@ -86,7 +95,6 @@ export default function FilterSidebar({ categories, conditions }) {
   const activeFilterCount =
     (selectedCategories.length > 0 ? 1 : 0) +
     (selectedConditions.length > 0 ? 1 : 0) +
-    (endingSoon ? 1 : 0) +
     (priceRange[0] > 0 || priceRange[1] < 5000 ? 1 : 0);
 
   return (
@@ -126,11 +134,16 @@ export default function FilterSidebar({ categories, conditions }) {
         <div className="flex gap-4 items-center">
           <Input
             type="number"
-            value={priceRange[0]}
+            value={priceRange[0] === 0 ? "" : priceRange[0]}
             onChange={(e) => {
-              const val = parseInt(e.target.value);
-              if (!isNaN(val) && val <= priceRange[1]) {
-                setPriceRange([val, priceRange[1]]);
+              const val = e.target.value;
+              if (val === "") {
+                setPriceRange(["", priceRange[1]]);
+              } else {
+                const parsed = parseInt(val);
+                if (!isNaN(parsed) && parsed <= priceRange[1]) {
+                  setPriceRange([parsed, priceRange[1]]);
+                }
               }
             }}
             className="w-24 px-2 py-1 border rounded"
@@ -140,16 +153,20 @@ export default function FilterSidebar({ categories, conditions }) {
           <span>to</span>
           <Input
             type="number"
-            value={priceRange[1]}
+            value={priceRange[1] === 0 ? "" : priceRange[1]}
             onChange={(e) => {
-              const val = parseInt(e.target.value);
-              if (!isNaN(val) && val >= priceRange[0]) {
-                setPriceRange([priceRange[0], val]);
+              const val = e.target.value;
+              if (val === "") {
+                setPriceRange([priceRange[0], ""]);
+              } else {
+                const parsed = parseInt(val);
+                if (!isNaN(parsed) && parsed >= priceRange[0]) {
+                  setPriceRange([priceRange[0], parsed]);
+                }
               }
             }}
             className="w-24 px-2 py-1 border rounded"
             min={priceRange[0]}
-            max={5000}
           />
         </div>
       </div>
@@ -193,26 +210,6 @@ export default function FilterSidebar({ categories, conditions }) {
           </div>
         ))}
       </div>
-
-      {/* Time Ending */}
-      <div>
-        <h3 className="text-sm font-medium mb-2">Time Ending</h3>
-        <div className="flex items-center space-x-2">
-          <Input
-            type="checkbox"
-            id="ending-soon"
-            checked={endingSoon}
-            onChange={() => setEndingSoon(!endingSoon)}
-          />
-          <label htmlFor="ending-soon" className="text-sm">
-            Ending Soon (24h)
-          </label>
-        </div>
-      </div>
-
-      <Button className="mt-4 w-full py-2 bg-blue-600 text-white rounded">
-        Apply Filters
-      </Button>
     </div>
   );
 }

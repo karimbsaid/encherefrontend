@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-const API_URL = "http://127.0.0.1:8080/api/";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await fetch(`${API_URL}auth/login`, {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -17,7 +17,7 @@ export const loginUser = async (email, password) => {
 
 export const signupUser = async (name, email, password) => {
   try {
-    const response = await fetch(`${API_URL}auth/register`, {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

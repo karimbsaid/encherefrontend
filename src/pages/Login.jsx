@@ -30,13 +30,12 @@ const Login = () => {
 
     try {
       const response = await login(email, password);
-      console.log(response);
       if (response === true) {
         navigate("/");
       }
       // Assume response includes user role (e.g., response.data.user.role)
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       setError(err.message || "something went wrong");
     } finally {
       setIsLoading(false);

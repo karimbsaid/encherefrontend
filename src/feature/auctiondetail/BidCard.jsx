@@ -10,7 +10,6 @@ import { useAuth } from "../../context/authContext";
 import axiosInstance from "../../service/axiosInstance";
 
 export default function BidCard({ auction, onBidSuccess }) {
-  console.log(auction);
   const [bidAmount, setBidAmount] = useState("");
   const [bidError, setBidError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
@@ -47,14 +46,13 @@ export default function BidCard({ auction, onBidSuccess }) {
     }
 
     const response = await axiosInstance.post(
-      `/api/auctions/${auction.id}/bids`,
+      `/api/mybids/${auction.id}`,
       null, // no request body, since you're sending data via query params
       {
         params: { amount },
       }
     );
     onBidSuccess();
-    console.log(response);
     setBidSuccess(true);
   };
   return (

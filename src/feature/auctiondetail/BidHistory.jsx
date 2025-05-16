@@ -3,7 +3,6 @@ import Card from "../../components/Card";
 import Table from "../../components/Table";
 import BidRow from "./BidRow";
 export default function BidHistory({ auction }) {
-  console.log(auction);
   return (
     <Card>
       <h3 className="mb-4 text-lg font-medium">Bid History</h3>

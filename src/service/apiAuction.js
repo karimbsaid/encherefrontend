@@ -1,7 +1,7 @@
-const API_URL = "http://127.0.0.1:8080/api/";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const getAuctionById = async (id, token) => {
-  const response = await fetch(`${API_URL}auctions/${id}`, {
+  const response = await fetch(`${API_URL}/api/auctions/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -12,17 +12,17 @@ export const getAuctionById = async (id, token) => {
   return await response.json();
 };
 
-export const getAllAuctions = async (page = 0, size = 10) => {
-  const response = await fetch(`/api/auctions?page=${page}&size=${size}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch auctions");
-  }
-  return await response.json();
-};
+// export const getAllAuctions = async (page = 0, size = 10) => {
+//   const response = await fetch(`/api/auctions?page=${page}&size=${size}`);
+//   if (!response.ok) {
+//     throw new Error("Failed to fetch auctions");
+//   }
+//   return await response.json();
+// };
 
 export const placeBid = async (auctionId, token, amount) => {
   const response = await fetch(
-    `${API_URL}auctions/${auctionId}/bids?amount=${amount}`,
+    `${API_URL}/api/auctions/${auctionId}/bids?amount=${amount}`,
     {
       method: "POST",
       headers: {
@@ -53,7 +53,7 @@ export const createAuction = async (auctionData, token) => {
     formData.append("fileImages", img.file);
   });
 
-  const response = await fetch(`${API_URL}auctions`, {
+  const response = await fetch(`${API_URL}/api/auctions`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`, // only this header
@@ -105,7 +105,7 @@ export const updateAuction = async (
   for (const key of formData.keys()) {
     console.log(key);
   }
-  const response = await fetch(`${API_URL}auctions/${id}`, {
+  const response = await fetch(`${API_URL}/api/auctions/${id}`, {
     method: "PATCH",
     body: formData,
     headers: {
@@ -120,7 +120,7 @@ export const updateAuction = async (
   return await response.json();
 };
 export const getAllCategory = async (token) => {
-  const response = await fetch(`${API_URL}auctions/categories`, {
+  const response = await fetch(`${API_URL}/api/auctions/categories`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -132,7 +132,7 @@ export const getAllCategory = async (token) => {
 };
 
 export const getAllConditions = async (token) => {
-  const response = await fetch(`${API_URL}auctions/conditions`, {
+  const response = await fetch(`${API_URL}/api/auctions/conditions`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

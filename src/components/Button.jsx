@@ -1,4 +1,5 @@
 const Button = ({
+  type = "button",
   disabled = false,
   variant = "simple",
   outline = false,
@@ -19,19 +20,22 @@ const Button = ({
       outline: "border border-red-600 text-red-600 bg-transparent",
     },
     simple: {
-      solid: "bg-black text-white",
-      outline: "border border-black text-black bg-transparent",
+      solid: "bg-black text-white hover:bg-gray-600",
+      outline:
+        "border border-black text-black bg-transparent  hover:bg-gray-100",
     },
   };
 
-  const disabledStyles = "opacity-50 cursor-not-allowed pointer-events-none";
+  const disabledStyles = "opacity-50 cursor-none pointer-events-none";
   const styleType = outline ? "outline" : "solid";
   const varStyle = variantStyles[variant][styleType];
 
   return (
     <button
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition whitespace-nowrap 
-          ${varStyle} ${disabled ? disabledStyles : ""} `}
+      type={type}
+      className={`flex items-center gap-2 px-4 py-1 rounded-lg transition whitespace-nowrap cursor-pointer
+
+    ${varStyle} ${disabled ? disabledStyles : ""} ${props.className || ""}`}
       {...props}
     >
       {children}

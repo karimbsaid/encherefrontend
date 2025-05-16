@@ -5,9 +5,9 @@ import Input from "../../components/Input";
 import { getAllCategory, getAllConditions } from "../../service/apiAuction";
 import Button from "../../components/Button";
 import { HiChevronDown } from "react-icons/hi2";
+import axiosInstance from "../../service/axiosInstance";
 
-const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
-  console.log(formData);
+const ItemDetails = ({ formData, setFormData, token, isEdit, errors }) => {
   const [categories, setCategories] = useState([]);
   const [conditions, setConditions] = useState([]);
 
@@ -26,9 +26,8 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const categories = await getAllCategory(token);
-      setCategories(categories);
-
+      const response = await axiosInstance.get("/api/categories");
+      setCategories(response);
       // If formData already has a category ID, find and set the name
       if (formData.category) {
         const selectedCategory = categories.find(
@@ -41,8 +40,8 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
     };
 
     const fetchConditions = async () => {
-      const conditions = await getAllConditions(token);
-      setConditions(conditions);
+      const response = await axiosInstance.get("/api/conditions");
+      setConditions(response);
 
       // If formData already has a condition ID, find and set the name
       if (formData.condition) {
@@ -92,7 +91,7 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
   return (
     <Card>
       <h1 className="text-3xl font-bold">Item Details</h1>
-      <p className="mt-2 text-muted-foreground">
+      <p className="mt-2 text-muted-foreground mb-2">
         Provide information about the item you're selling.
       </p>
       <div className="space-y-4">
@@ -105,6 +104,9 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
             value={formData.title}
             onChange={handleInputChange}
           />
+          {errors.title && (
+            <p className="text-red-500 text-sm">{errors.title}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -123,6 +125,9 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
             value={formData.description}
             onChange={handleInputChange}
           />
+          {errors.description && (
+            <p className="text-red-500 text-sm">{errors.description}</p>
+          )}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -137,7 +142,10 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
               onValueChange={handleCategoryChange}
             >
               <DropDown.Trigger>
-                <Button className="w-full justify-between border border-gray-500 flex items-center p-2 rounded-t-md">
+                <Button
+                  type="button"
+                  className="w-full justify-between border border-gray-500 flex items-center p-2 rounded-t-md"
+                >
                   {selectedCategoryName || "Select Category"}
                   <HiChevronDown />
                 </Button>
@@ -151,6 +159,9 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
                 ))}
               </DropDown.Window>
             </DropDown>
+            {errors.category && (
+              <p className="text-red-500 text-sm">{errors.category}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -179,6 +190,9 @@ const ItemDetails = ({ formData, setFormData, token, isEdit }) => {
                 ))}
               </DropDown.Window>
             </DropDown>
+            {errors.condition && (
+              <p className="text-red-500 text-sm">{errors.condition}</p>
+            )}
           </div>
         </div>
       </div>

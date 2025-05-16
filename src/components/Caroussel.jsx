@@ -15,46 +15,45 @@ const Carousel = ({ images = [], title = "Image", showThumbnails = true }) => {
   return (
     <>
       {/* Main Image Viewer */}
-      <div className="relative   overflow-hidden rounded-lg bg-muted">
+      <div className="relative w-full h-[400px] overflow-hidden rounded-lg bg-muted">
+        {" "}
+        {/* Added fixed height */}
         <img
           src={images[currentImageIndex] || "/placeholder.svg"}
           alt={title}
-          className="w-auto h-96 object-cover"
+          className="w-full h-full object-contain" // Changed object-cover to object-contain
         />
-
         {/* Prev Button */}
         <button
           onClick={prevImage}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-1 rounded-full shadow"
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200"
         >
-          <HiChevronLeft className="h-6 w-6 text-black" />
+          <HiChevronLeft className="h-6 w-6 text-gray-800" />
         </button>
-
         {/* Next Button */}
         <button
           onClick={nextImage}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-1 rounded-full shadow"
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200"
         >
-          <HiChevronRight className="h-6 w-6 text-black" />
+          <HiChevronRight className="h-6 w-6 text-gray-800" />
         </button>
-
         {/* Image Counter */}
-        <div className="absolute bottom-2 right-2 rounded-md bg-white/70 px-2 py-1 text-xs text-black">
+        <div className="absolute bottom-4 right-4 rounded-md bg-white/80 px-3 py-1 text-sm text-gray-800 font-medium">
           {currentImageIndex + 1} / {images.length}
         </div>
       </div>
 
       {/* Thumbnail Navigation */}
       {showThumbnails && (
-        <div className="mt-4 flex space-x-2 overflow-x-auto pb-2">
+        <div className="mt-4 flex justify-center space-x-2 overflow-x-auto pb-2">
           {images.map((image, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md ${
+              className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md transition-all duration-200 ${
                 index === currentImageIndex
-                  ? "ring-2 ring-primary"
-                  : "ring-1 ring-border"
+                  ? "ring-2 ring-blue-500"
+                  : "ring-1 ring-gray-200 hover:ring-gray-300"
               }`}
             >
               <img

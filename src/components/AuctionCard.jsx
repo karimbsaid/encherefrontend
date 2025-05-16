@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../service/axiosInstance";
 
 const AuctionCard = ({ auction }) => {
-  console.log(auction);
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -19,10 +18,9 @@ const AuctionCard = ({ auction }) => {
     const fetchFavorite = async () => {
       try {
         const res = await axiosInstance.get(`/api/favorites/${auction.id}`);
-        console.log(res);
         setIsFavorite(res === true);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
     fetchFavorite();

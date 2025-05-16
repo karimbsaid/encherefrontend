@@ -26,7 +26,7 @@ export const TabsList = ({ children, className }) => {
 
   return (
     <div
-      className={`grid w-full grid-cols-1 md:grid-cols-3 gap-2 ${className}`}
+      className={`grid w-full grid-cols-1 md:grid-cols-2 gap-2 ${className}`}
     >
       {React.Children.map(children, (child) =>
         cloneElement(child, {

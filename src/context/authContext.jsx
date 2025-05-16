@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (formData) => {
     setIsLoading(true);
-    console.log(formData);
     try {
       const { username, email, password } = formData;
       const response = await axiosInstance.post("/api/auth/signup", {

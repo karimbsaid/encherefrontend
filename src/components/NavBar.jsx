@@ -12,19 +12,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 import Button from "./Button";
 import DropDown from "./DropDown";
 import Input from "./Input";
+import { useAuth } from "../context/authContext";
 
-export default function NavBar() {
-  const notificationCount = 2;
-
+export default function NavBar({ notificationCount }) {
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/auctions", label: "Auctions" },
-    { href: "/categories", label: "Categories" },
-    { href: "/how-it-works", label: "How It Works" },
+    // { href: "/auctions", label: "Auctions" },
+    // { href: "/categories", label: "Categories" },
+    // { href: "/how-it-works", label: "How It Works" },
     { href: "/about", label: "About" },
   ];
-
-  const isLoggedIn = true;
+  const { logout, user } = useAuth();
+  const isLoggedIn = user ? true : false;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur transition-shadow  shadow-sm">
@@ -50,16 +49,6 @@ export default function NavBar() {
           ))}
         </nav>
 
-        <div className="hidden flex-1 md:flex md:justify-center md:px-4">
-          <div className="relative w-full max-w-sm">
-            <HiMagnifyingGlass className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search for items..."
-              className="w-full bg-background pl-8 pr-4"
-            />
-          </div>
-        </div>
-
         <div className="flex items-center gap-2">
           {isLoggedIn ? (
             <>
@@ -67,7 +56,7 @@ export default function NavBar() {
                 <Link to="/notifications" className="relative">
                   <HiBell className="h-5 w-5" />
                   {notificationCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+                    <span className="absolute -right-4 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
                       {notificationCount}
                     </span>
                   )}
@@ -91,31 +80,18 @@ export default function NavBar() {
                   </Button>
                 </DropDown.Trigger>
                 <DropDown.Window className="w-56">
-                  <DropDown.Item>My Account</DropDown.Item>
-
                   <DropDown.Item>
-                    <Link to="/dashboard">
+                    <Link to="/dashboard" className="flex items-center">
                       <HiMiniUser className="mr-2 h-4 w-4" />
                       <span>Dashboard</span>
                     </Link>
                   </DropDown.Item>
-                  <DropDown.Item asChild>
-                    <Link to="/favorites">
-                      <HiHeart className="mr-2 h-4 w-4" />
-                      <span>Favorites</span>
-                    </Link>
-                  </DropDown.Item>
-                  <DropDown.Item asChild>
-                    <Link to="/dashboard?tab=won">
-                      <HiShoppingBag className="mr-2 h-4 w-4" />
-                      <span>Won Auctions</span>
-                    </Link>
-                  </DropDown.Item>
-
                   {/* <DropdownMenuSeparator /> */}
                   <DropDown.Item>
-                    <HiArrowRightOnRectangle className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <div onClick={logout} className="flex items-center">
+                      <HiArrowRightOnRectangle className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </div>
                   </DropDown.Item>
                 </DropDown.Window>
               </DropDown>

@@ -12,12 +12,14 @@ import {
 } from "../service/apiAuction";
 import { useAuth } from "../context/authContext";
 import Card from "../components/Card";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axiosInstance from "../service/axiosInstance";
 
 export default function CreateAuctionPage() {
   const { user, isLoading } = useAuth();
   // eslint-disable-next-line no-unused-vars
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -68,7 +70,7 @@ export default function CreateAuctionPage() {
 
   useEffect(() => {
     const fetchAuctionData = async () => {
-      const auctionData = await getAuctionById(auctionId, token);
+      const auctionData = await axiosInstance.get(`/api/auctions/${auctionId}`);
       const formattedData = {
         title: auctionData.title || "",
         description: auctionData.description || "",
@@ -82,16 +84,15 @@ export default function CreateAuctionPage() {
           url,
           status: "existing",
         })),
+        bids: auctionData.bids || [],
       };
       setFormData(formattedData);
     };
     if (auctionId) {
       setIsEdit(true);
-      if (token) {
-        fetchAuctionData();
-      }
+      fetchAuctionData();
     }
-  }, [auctionId, token]);
+  }, [auctionId]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -134,7 +135,6 @@ export default function CreateAuctionPage() {
     if (formData.images.length === 0) {
       newErrors.images = "At least one image is required";
     }
-    console.log(newErrors);
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -162,9 +162,10 @@ export default function CreateAuctionPage() {
         await createAuction(formData, token);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     } finally {
       setIsSubmitting(false);
+      navigate("/dashboard");
     }
   };
   if (isLoading) {
@@ -174,7 +175,7 @@ export default function CreateAuctionPage() {
   return (
     <div className="container px-4 py-8 md:px-6 md:py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Create New Auction</h1>
+        <h1 className="text-xl font-bold">Create New Auction</h1>
         <p className="mt-2 text-muted-foreground">
           Fill out the form below to list your item for auction.
         </p>
@@ -183,19 +184,25 @@ export default function CreateAuctionPage() {
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-8">
-            <ImageUpload formData={formData} setFormData={setFormData} />
+            <ImageUpload
+              formData={formData}
+              setFormData={setFormData}
+              errors={errors}
+            />
 
             <ItemDetails
               isEdit={isEdit}
               formData={formData}
               setFormData={setFormData}
               token={token}
+              errors={errors}
             />
 
             <AuctionSettings
               formData={formData}
               setFormData={setFormData}
               isEdit={isEdit}
+              errors={errors}
             />
 
             <Button

@@ -1,8 +1,9 @@
 import axios from "axios";
 import Swal from "sweetalert2";
+const baseURL = import.meta.env.VITE_API_URL;
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: baseURL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

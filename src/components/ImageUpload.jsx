@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { HiDocumentArrowUp, HiPlus, HiXMark } from "react-icons/hi2";
 import Card from "./Card";
 
-const ImageUpload = ({ formData, setFormData }) => {
+const ImageUpload = ({ formData, setFormData, errors }) => {
   const fileInputRef = useRef(null);
 
   const handleImageUpload = (e) => {
@@ -40,12 +40,12 @@ const ImageUpload = ({ formData, setFormData }) => {
 
   return (
     <Card>
-      <h1 className="text-3xl font-bold">Item Images</h1>
+      <h1 className="text-xl font-bold">Item Images</h1>
       <p className="mt-2 text-muted-foreground">
         Upload images of your item. The first image will be the main image.
       </p>
       <div
-        className="relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6"
+        className="relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 mt-2"
         onClick={() => fileInputRef.current?.click()}
       >
         <input
@@ -62,8 +62,12 @@ const ImageUpload = ({ formData, setFormData }) => {
         </div>
       </div>
 
+      {errors.images && (
+        <p className="text-red-500 text-sm mt-2">{errors.images}</p>
+      )}
+
       {activeImages.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 mt-4">
           {activeImages.map((image, index) => (
             <div
               key={`${image.status}-${image.url || image.file.name}-${index}`}
@@ -72,7 +76,7 @@ const ImageUpload = ({ formData, setFormData }) => {
               <img
                 src={image.url || URL.createObjectURL(image.file)}
                 alt={`Image ${index + 1}`}
-                className="object-cover"
+                className="h-full w-full object-cover"
               />
               <button
                 type="button"

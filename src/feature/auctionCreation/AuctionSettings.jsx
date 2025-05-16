@@ -2,7 +2,7 @@ import Card from "../../components/Card";
 import Input from "../../components/Input";
 import { HiCalendar, HiCurrencyDollar } from "react-icons/hi2";
 
-const AuctionSettings = ({ formData, setFormData, isEdit }) => {
+const AuctionSettings = ({ formData, setFormData, isEdit, errors }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -34,12 +34,16 @@ const AuctionSettings = ({ formData, setFormData, isEdit }) => {
               name="startPrice"
               type="number"
               placeholder="0.00"
+              disabled={formData?.bids?.length > 0}
               className="pl-10 pr-3 py-2 w-full border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formData.startPrice}
               onChange={handleInputChange}
               min="0.01"
               step="0.01"
             />
+            {errors.startPrice && (
+              <p className="text-red-500 text-sm">{errors.startPrice}</p>
+            )}
           </div>
         </div>
 
@@ -53,6 +57,7 @@ const AuctionSettings = ({ formData, setFormData, isEdit }) => {
           <div className="relative">
             <HiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <Input
+              disabled={formData?.bids?.length > 0}
               id="endTime"
               name="endTime"
               type="datetime-local"
@@ -60,6 +65,9 @@ const AuctionSettings = ({ formData, setFormData, isEdit }) => {
               value={formData.endTime}
               onChange={handleInputChange}
             />
+            {errors.endTime && (
+              <p className="text-red-500 text-sm">{errors.endTime}</p>
+            )}
           </div>
         </div>
       </div>
