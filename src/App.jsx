@@ -7,7 +7,7 @@ import { AuthProvider } from "./context/authContext";
 import AppLayout from "./components/AppLayout";
 import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
 import NotificationPage from "./pages/NotificationPage";
 import { Toaster } from "react-hot-toast";
 
